@@ -18,10 +18,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'documents'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,6 +76,7 @@ USE_I18N = True
 USE_L10N = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR.parent / 'static_files'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
