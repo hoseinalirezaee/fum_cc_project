@@ -1,11 +1,9 @@
-from django.contrib import admin
 from django.urls import path
 
 from documents.views import api_documents_view
 from main import error_handlers
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('docs/', api_documents_view)
 ]
 

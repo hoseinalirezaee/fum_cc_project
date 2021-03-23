@@ -6,49 +6,26 @@ from dj_database_url import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = environ.get('SECRET_KEY', 'DummySecretKey')
+JWT_ALGORITHM = 'HS256'
+JWT_SECRET = SECRET_KEY
 
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
-    'documents'
+    'documents',
+    'users'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
@@ -84,6 +61,12 @@ REST_FRAMEWORK = {
     ],
     'EXCEPTION_HANDLER': 'main.error_handlers.api_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication',
+        'common.authentication.CustomTokenAuthentication'
     ]
 }
+
+
+AUTH_SERVICE_BASE_API_URL = 'http://example.com'
+AUTH_SERVICE_ACCESS_USERNAME = 'example'
+AUTH_SERVICE_ACCESS_PASSWORD = 'password'
