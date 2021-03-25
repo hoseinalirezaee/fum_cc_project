@@ -1,8 +1,21 @@
+from datetime import timedelta
 from unittest import mock
 
+import jwt
+from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 
 from users import models
+
+
+def get_token(user):
+    data = {
+        'username': user.username,
+        'exp': (timezone.now() + timedelta(days=1)).timestamp()
+    }
+    token = jwt.encode(data, settings.JWT_SECRET, settings.JWT_ALGORITHM)
+    return token
 
 
 class UserCreateTest(TestCase):
@@ -37,3 +50,17 @@ class UserCreateTest(TestCase):
 
         response = self.client.post('/users/create/', data=data)
         self.assertEqual(response.status_code, 400)
+
+
+class UserAddFavoriteDoc(TestCase):
+
+    @mock.patch('common.services.doctors_services.is_doctor')
+    def test_add_favorite_doc(self, mocked_is_doctor):
+        user = models.User.objects.create(first_name='Hosein', last_name='Alirezaee', username='hosein')
+        token = get_token(user)
+
+        mocked_is_doctor.return_value = True
+        self.client.post('/users/add_favorite_doc/', data={'doc_id': 100}, HTTP_AUTHORIZATION='Bearer %s' % token)
+        user.refresh_from_db()
+        self.assertEqual(len(user.favorite_doctors), 1)
+        self.assertIn('100', user.favorite_doctors)

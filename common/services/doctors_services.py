@@ -8,7 +8,7 @@ from django.conf import settings
 def get_session():
     session = requests.Session()
     session.hooks['response'] = lambda r, *args, **kwargs: r.raise_for_status()
-    session.auth = (settings.AUTH_SERVICE_ACCESS_USERNAME, settings.AUTH_SERVICE_ACCESS_PASSWORD)
+    session.auth = (settings.DOC_SERVICE_ACCESS_USERNAME, settings.DOC_SERVICE_ACCESS_PASSWORD)
     return session
 
 
@@ -26,11 +26,11 @@ def handle_exceptions(func):
     return wrapper
 
 
-BASE_URL = settings.AUTH_SERVICE_BASE_API_URL
+BASE_URL = settings.DOC_SERVICE_BASE_URL
 
 
 PATHS = {
-    'create_user': '/internal/users/create/'
+    'is_doctor': '/internal/docs/exists/'
 }
 
 
@@ -38,19 +38,11 @@ def get_url(name):
     return urljoin(BASE_URL, PATHS[name])
 
 
-user_types = {'doc', 'normal'}
-
-
 @handle_exceptions
-def create_user(username, password, type):
-    assert type in user_types
-    url = get_url('create_user')
-    data = {'username': username, 'password': password, 'type': type}
-    response = session.post(url, json=data)
-    status = response.json()['code'].lower()
-    if status == 'ok':
-        return True
-    return False
+def is_doctor(doc_id):
+    url = get_url('is_doctor')
+    response = session.get(url, data={'doc_id': doc_id})
+    return response.json()['exists']
 
 
-__all__ = ['create_user']
+__all__ = ['is_doctor']

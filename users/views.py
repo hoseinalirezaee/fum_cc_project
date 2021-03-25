@@ -1,5 +1,4 @@
-from rest_framework import serializers, status
-from rest_framework.mixins import CreateModelMixin
+from rest_framework import exceptions, serializers, status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -17,7 +16,7 @@ class UserCreateSerializer(serializers.Serializer):
         return user
 
 
-class UserViewSet(CreateModelMixin, GenericViewSet):
+class UserViewSet(GenericViewSet):
 
     def get_serializer_class(self):
         if self.action == 'create_user':
@@ -33,11 +32,20 @@ class UserViewSet(CreateModelMixin, GenericViewSet):
     def create_user(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        serializer.save()
         del serializer.validated_data['password']
         return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
+    def add_favorite_doctor(self, request, *args, **kwargs):
+        if request.user:
+            doc_id = request.data.get('doc_id')
+            if not doc_id:
+                raise exceptions.ValidationError('doc_id is required.', 'required')
+            request.user.add_favorite_doctor(doc_id)
+        return Response({'message': 'Saved successfully.'})
+
 
 create_user_view = UserViewSet.as_view(actions={'post': 'create_user'})
+add_favorite_doc = UserViewSet.as_view(actions={'post': 'add_favorite_doctor'})
 
-__all__ = ['create_user_view']
+__all__ = ['create_user_view', 'add_favorite_doc']

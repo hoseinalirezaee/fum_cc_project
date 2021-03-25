@@ -61,7 +61,6 @@ REST_FRAMEWORK = {
     ],
     'EXCEPTION_HANDLER': 'main.error_handlers.api_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
         'common.authentication.CustomTokenAuthentication'
     ]
 }
@@ -70,3 +69,8 @@ REST_FRAMEWORK = {
 AUTH_SERVICE_BASE_API_URL = 'http://example.com'
 AUTH_SERVICE_ACCESS_USERNAME = 'example'
 AUTH_SERVICE_ACCESS_PASSWORD = 'password'
+
+
+DOC_SERVICE_BASE_URL = 'http://doc.example.com'
+DOC_SERVICE_ACCESS_USERNAME = 'username'
+DOC_SERVICE_ACCESS_PASSWORD = 'password'
