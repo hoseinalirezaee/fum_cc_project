@@ -1,4 +1,5 @@
 from rest_framework import exceptions, serializers, status
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -16,7 +17,18 @@ class UserCreateSerializer(serializers.Serializer):
         return user
 
 
-class UserViewSet(GenericViewSet):
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ('first_name', 'last_name', 'phone')
+
+
+class UserViewSet(UpdateModelMixin, GenericViewSet):
+
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
 
     def get_serializer_class(self):
         if self.action == 'create_user':
@@ -47,5 +59,6 @@ class UserViewSet(GenericViewSet):
 
 create_user_view = UserViewSet.as_view(actions={'post': 'create_user'})
 add_favorite_doc = UserViewSet.as_view(actions={'post': 'add_favorite_doctor'})
+update_user_view = UserViewSet.as_view(actions={'post': 'partial_update'})
 
-__all__ = ['create_user_view', 'add_favorite_doc']
+__all__ = ['create_user_view', 'add_favorite_doc', 'update_user_view']

@@ -64,3 +64,20 @@ class UserAddFavoriteDoc(TestCase):
         user.refresh_from_db()
         self.assertEqual(len(user.favorite_doctors), 1)
         self.assertIn('100', user.favorite_doctors)
+
+
+class TestUserUpdate(TestCase):
+
+    def test_user_update(self):
+        user = models.User.objects.create(username='hosein', first_name='Hossein', last_name='Alirezaee')
+        token = get_token(user)
+
+        self.assertEqual(user.first_name, 'Hossein')
+        self.assertEqual(user.phone, '')
+
+        new_data = {'first_name': 'Hosein', 'phone': '09151234567'}
+        self.client.post('/users/update/', data=new_data, HTTP_AUTHORIZATION='Bearer %s' % token)
+
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'Hosein')
+        self.assertEqual(user.phone, '09151234567')

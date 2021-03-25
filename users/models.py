@@ -10,6 +10,7 @@ class User(models.Model):
     username = models.CharField(_('Username'), primary_key=True, max_length=128)
     first_name = models.CharField(_('First Name'), max_length=64)
     last_name = models.CharField(_('Last Name'), max_length=64)
+    phone = models.CharField(_('Phone'), max_length=16, null=False, default='')
     favorite_doctors = ArrayField(base_field=models.CharField(max_length=128), default=list)
 
     def add_favorite_doctor(self, doc_id):
