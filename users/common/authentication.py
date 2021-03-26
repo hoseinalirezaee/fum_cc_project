@@ -1,8 +1,8 @@
 import jwt
+from api.models import User
 from django.conf import settings
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from api.models import User
 
 
 class CustomTokenAuthentication(TokenAuthentication):
@@ -15,9 +15,9 @@ class CustomTokenAuthentication(TokenAuthentication):
         except jwt.InvalidTokenError:
             raise AuthenticationFailed('Token is invalid.', 'invalid_token')
 
-        username = decoded_token['username']
+        user_id = decoded_token['user_id']
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             raise AuthenticationFailed('No such user.', 'user_not_found')
         else:

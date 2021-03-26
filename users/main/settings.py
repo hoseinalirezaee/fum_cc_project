@@ -26,7 +26,7 @@ ROOT_URLCONF = 'main.urls'
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
-DATABASE_CONFIG = config('DATABASE_URL', engine=False)
+DATABASE_CONFIG = config('DATABASE_URL', engine=False, default='postgres://postgres:1@127.0.0.1:5432/users')
 
 DATABASES = {
     'default': {
