@@ -2,7 +2,8 @@ import jwt
 from common.authentication import CustomBasicAuthentication
 from django.conf import settings
 from django.utils import timezone
-from rest_framework import exceptions, permissions, serializers, status
+from rest_framework import (exceptions, permissions, serializers, status,
+                            validators)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -53,8 +54,35 @@ class GetUserRuleView(APIView):
             return Response({'status': 'ok', 'rule': user.rule}, status=status.HTTP_200_OK)
 
 
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ['username', 'password', 'rule']
+        extra_kwargs = {
+            'username': {
+                'validators': [validators.UniqueValidator(queryset=model.objects.all())]
+            }
+        }
+
+    def create(self, validated_data):
+        return models.User.objects.create_user(validated_data['username'],
+                                               validated_data['password'],
+                                               validated_data['rule'])
+
+
+class RegisterUserView(APIView):
+    authentication_classes = [CustomBasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({'status': 'ok', 'user_id': user.id}, status=status.HTTP_201_CREATED)
+
+
 get_token_view = GetTokenView.as_view()
 get_rule_view = GetUserRuleView.as_view()
+register_view = RegisterUserView.as_view()
 
-
-__all__ = ['get_token_view', 'get_rule_view']
+__all__ = ['get_token_view', 'get_rule_view', 'register_view']

@@ -7,17 +7,17 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
-    def _create_user(self, username, password, rule):
+    def create_user(self, username, password, rule):
         user = self.model(username=username, rule=rule)
         user.set_password(password)
         user.save()
         return user
 
     def create_patient(self, username, password):
-        return self._create_user(username, password, self.model.Rules.PATIENT)
+        return self.create_user(username, password, self.model.Rules.PATIENT)
 
     def create_doctor(self, username, password):
-        return self._create_user(username, password, self.model.Rules.DOCTOR)
+        return self.create_user(username, password, self.model.Rules.DOCTOR)
 
 
 class User(AbstractBaseUser):

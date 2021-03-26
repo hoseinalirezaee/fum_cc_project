@@ -8,6 +8,13 @@ from django.test import TestCase
 from api import models
 
 
+def get_basic_auth_header():
+    digest = '%s:%s' % (settings.BASIC_AUTH_USERNAME, settings.BASIC_AUTH_PASSWORD)
+    digest = digest.encode('utf-8')
+    digest = b64encode(digest).decode('utf-8')
+    return 'BASIC %s' % digest
+
+
 class TestUserCreation(TestCase):
     def _test_user(self, create_func, username, password, rule):
         create_func(username, password)
@@ -23,6 +30,23 @@ class TestUserCreation(TestCase):
     def test_create_doctor(self):
         self._test_user(models.User.objects.create_doctor, 'hosein', 'password', models.User.Rules.DOCTOR)
 
+    def test_register(self):
+        data = {
+            'username': 'hosein',
+            'password': '1',
+            'rule': 'PATIENT'
+        }
+
+        response = self.client.post('/internal/users/create/', data=data, HTTP_AUTHORIZATION=get_basic_auth_header())
+        self.assertEqual(response.status_code, 201)
+        user = models.User.objects.get(id=response.json()['user_id'])
+        self.assertEqual(user.username, 'hosein')
+        self.assertTrue(user.check_password('1'))
+        self.assertEqual(user.rule, models.User.Rules.PATIENT)
+
+        response = self.client.post('/internal/users/create/', data=data, HTTP_AUTHORIZATION=get_basic_auth_header())
+        self.assertEqual(response.status_code, 400)
+
 
 class TestGetToken(TestCase):
     def test_get_token(self):
@@ -35,9 +59,7 @@ class TestGetToken(TestCase):
 class TestGetRule(TestCase):
     def test_get_rule(self):
         user = models.User.objects.create_patient(username='hosein', password='1')
-        digest = '%s:%s' % (settings.BASIC_AUTH_USERNAME, settings.BASIC_AUTH_PASSWORD)
-        digest = digest.encode('utf-8')
-        digest = b64encode(digest).decode('utf-8')
-        response = self.client.get('/internal/users/%s/rule/' % str(user.id), HTTP_AUTHORIZATION='BASIC %s' % digest)
+        basic_auth_header = get_basic_auth_header()
+        response = self.client.get('/internal/users/%s/rule/' % str(user.id), HTTP_AUTHORIZATION=basic_auth_header)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['rule'], user.rule)

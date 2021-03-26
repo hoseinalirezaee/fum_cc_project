@@ -52,7 +52,7 @@ def create_user(username, password, rule: UserRule):
     response = session.post(url, json=data)
     returned_json = response.json()
     if returned_json['status'].lower() == 'ok':
-        return returned_json['id']
+        return returned_json['user_id']
     return None
 
 
