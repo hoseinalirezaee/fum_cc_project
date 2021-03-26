@@ -15,6 +15,12 @@ class AuthenticatedUser:
         return True
 
 
+class UnAuthenticatedUser:
+    @property
+    def is_authenticated(self):
+        return False
+
+
 class CustomTokenAuthentication(TokenAuthentication):
     keyword = 'Bearer'
 

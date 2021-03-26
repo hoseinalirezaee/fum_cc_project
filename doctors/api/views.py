@@ -1,5 +1,5 @@
 from common.authentication import CustomTokenAuthentication
-from rest_framework import serializers, status
+from rest_framework import permissions, serializers, status
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +13,7 @@ class CommentSerializer(serializers.Serializer):
 
 class CommentView(APIView):
     authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, doc_id):
         serializer = CommentSerializer(data=request.data)
@@ -45,7 +46,7 @@ class DoctorListView(ListAPIView):
 class AppointmentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AppointmentTime
-        fields = ['id', 'date', 'time_from', 'time_to', 'count']
+        fields = ['id', 'date', 'time_from', 'time_to']
 
 
 class AppointmentsList(ListAPIView):
@@ -60,6 +61,17 @@ class AppointmentsList(ListAPIView):
         return models.AppointmentTime.objects.filter(doctor_id=doc_id)
 
 
+class ReserveDoctorView(APIView):
+    authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, appointment_id):
+        appointment = get_object_or_404(models.AppointmentTime.objects.all(), id=appointment_id)
+        reservation = appointment.reserve(request.user.user_id)
+        return Response({'reservation_id': reservation.id}, status=status.HTTP_201_CREATED)
+
+
 create_comment_view = CommentView.as_view()
 list_doctors_views = DoctorListView.as_view()
 appointment_list_view = AppointmentsList.as_view()
+reserve_doctor = ReserveDoctorView.as_view()

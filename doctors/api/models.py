@@ -23,12 +23,14 @@ class AppointmentTime(models.Model):
     date = models.DateField(default=timezone.now)
     time_from = models.TimeField(default=timezone.now)
     time_to = models.TimeField(default=timezone.now)
-    count = models.PositiveSmallIntegerField(default=1)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE,
                                related_name='appointment_times', related_query_name='appointment_times')
 
     class Meta:
         ordering = ('date', 'time_from', 'time_to')
+
+    def reserve(self, user_id):
+        return Reservation.objects.create(doctor=self.doctor, patient_id=user_id, appointment=self)
 
 
 class Reservation(models.Model):

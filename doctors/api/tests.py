@@ -59,3 +59,17 @@ class TestAppoinmentList(TestCase):
         response = self.client.get('/doctors/%s/appointments/' % str(doc.id))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 5)
+
+
+class TestReservetion(TestCase):
+    @mock.patch('common.services.auth_services.get_rule')
+    def test_reservation(self, mocked_get_rule):
+        doc = models.Doctor.objects.create(id=uuid1(), username='hosein', first_name='Hosein', last_name='Alirezaee')
+        appointment = models.AppointmentTime.objects.create(doctor=doc)
+
+        mocked_get_rule.return_value = auth_services.UserRule.PATIENT
+        response = self.client.post('/doctors/appointments/%s/reserve/' % appointment.id,
+                                    HTTP_AUTHORIZATION=get_auth_header('100'))
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(models.Reservation.objects.filter(id=response.json()['reservation_id']).exists())
