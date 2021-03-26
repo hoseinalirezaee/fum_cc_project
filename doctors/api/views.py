@@ -1,10 +1,10 @@
-from rest_framework.views import APIView
-from rest_framework.generics import get_object_or_404
 from common.authentication import CustomTokenAuthentication
-from rest_framework import serializers
-from api import models
+from rest_framework import serializers, status
+from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView
+
+from api import models
 
 
 class CommentSerializer(serializers.Serializer):
@@ -28,4 +28,19 @@ class CommentView(APIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
 
+class DoctorListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Doctor
+        fields = ['id', 'first_name', 'last_name', 'phone', 'address', 'men', 'expertise', 'city']
+
+
+class DoctorListView(ListAPIView):
+    queryset = models.Doctor.objects.all()
+    serializer_class = DoctorListSerializer
+
+    def perform_authentication(self, request):
+        pass
+
+
 create_comment_view = CommentView.as_view()
+list_doctors_views = DoctorListView.as_view()

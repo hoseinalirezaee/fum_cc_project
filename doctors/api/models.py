@@ -1,7 +1,7 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
 from common.services import auth_services
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Doctor(models.Model):
@@ -12,6 +12,11 @@ class Doctor(models.Model):
     phone = models.CharField(_('Phone'), max_length=16, null=False, default='')
     men = models.CharField(_('Medical Education Number'), max_length=11, default='')
     address = models.TextField(_('Address'), max_length=8192, default='')
+    city = models.CharField(_('City'), max_length=64, default='')
+    expertise = models.CharField(_('Expertise'), max_length=64, default='')
+
+    class Meta:
+        ordering = ('last_name', 'first_name')
 
 
 class AppointmentTime(models.Model):

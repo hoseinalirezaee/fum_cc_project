@@ -1,12 +1,12 @@
 from datetime import timedelta
 from unittest import mock
+from uuid import uuid1
 
 import jwt
 from common.services import auth_services
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
-from uuid import uuid1
 
 from api import models
 
@@ -37,3 +37,13 @@ class TestComment(TestCase):
         self.assertEqual(comment.text, 'Test text.')
 
 
+class TestDoctorsList(TestCase):
+    def test_doctor_list(self):
+        models.Doctor.objects.create(username='hosein', first_name='Hosein', last_name='Alirezaee')
+        models.Doctor.objects.create(username='ali', first_name='Ali', last_name='Ghasemi')
+        models.Doctor.objects.create(username='vahid', first_name='Vahid', last_name='Baghani')
+        models.Doctor.objects.create(username='pouria', first_name='Pouria', last_name='Ghadiri')
+
+        response = self.client.get('/doctors/list/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 4)
