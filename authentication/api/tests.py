@@ -1,3 +1,4 @@
+from base64 import b64encode
 from uuid import UUID
 
 import jwt
@@ -29,3 +30,14 @@ class TestGetToken(TestCase):
         response = self.client.post('/authentication/get_token/', data={'username': 'hosein', 'password': 1})
         data = jwt.decode(response.json()['token'], algorithms=settings.JWT_ALGORITHM, key=settings.JWT_SECRET)
         self.assertEqual(data['user_id'], str(user.id))
+
+
+class TestGetRule(TestCase):
+    def test_get_rule(self):
+        user = models.User.objects.create_patient(username='hosein', password='1')
+        digest = '%s:%s' % (settings.BASIC_AUTH_USERNAME, settings.BASIC_AUTH_PASSWORD)
+        digest = digest.encode('utf-8')
+        digest = b64encode(digest).decode('utf-8')
+        response = self.client.get('/internal/users/%s/rule/' % str(user.id), HTTP_AUTHORIZATION='BASIC %s' % digest)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['rule'], user.rule)

@@ -1,7 +1,8 @@
 import jwt
+from common.authentication import CustomBasicAuthentication
 from django.conf import settings
 from django.utils import timezone
-from rest_framework import exceptions, serializers, status
+from rest_framework import exceptions, permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -39,6 +40,21 @@ class GetTokenView(APIView):
                 return Response({'status': 'incorrect_password'}, status=status.HTTP_403_FORBIDDEN)
 
 
-get_token_view = GetTokenView.as_view()
+class GetUserRuleView(APIView):
+    authentication_classes = [CustomBasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
-__all__ = ['get_token_view']
+    def get(self, request, user_id):
+        try:
+            user = models.User.objects.get(id=user_id)
+        except models.User.DoesNotExist:
+            raise exceptions.NotFound('No user found with user_id `%s`' % user_id, 'does_not_exist')
+        else:
+            return Response({'status': 'ok', 'rule': user.rule}, status=status.HTTP_200_OK)
+
+
+get_token_view = GetTokenView.as_view()
+get_rule_view = GetUserRuleView.as_view()
+
+
+__all__ = ['get_token_view', 'get_rule_view']
