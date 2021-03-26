@@ -63,4 +63,4 @@ def get_rule(user_id):
     return UserRule(response.json()['rule'])
 
 
-__all__ = ['create_user']
+__all__ = ['create_user', 'get_rule']
