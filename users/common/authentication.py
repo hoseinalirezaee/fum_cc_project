@@ -5,6 +5,12 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
 
+class UnAuthenticatedUser:
+    @property
+    def is_authenticated(self):
+        return False
+
+
 class CustomTokenAuthentication(TokenAuthentication):
     keyword = 'Bearer'
 

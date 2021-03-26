@@ -59,7 +59,8 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'main.error_handlers.api_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'common.authentication.CustomTokenAuthentication'
-    ]
+    ],
+    'UNAUTHENTICATED_USER': 'common.authentication.UnAuthenticatedUser'
 }
 
 

@@ -1,4 +1,4 @@
-from rest_framework import exceptions, serializers, status
+from rest_framework import exceptions, permissions, serializers, status
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserViewSet(UpdateModelMixin, GenericViewSet):
 
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         return self.request.user
@@ -38,8 +39,12 @@ class UserViewSet(UpdateModelMixin, GenericViewSet):
     def perform_authentication(self, request):
         if self.action == 'create_user':
             return
-
         super().perform_authentication(request)
+
+    def get_permissions(self):
+        if self.action == 'create_user':
+            return []
+        return super().get_permissions()
 
     def create_user(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
