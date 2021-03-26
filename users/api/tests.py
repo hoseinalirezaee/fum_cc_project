@@ -6,7 +6,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
-from users import models
+from api import models
 
 
 def get_token(user):

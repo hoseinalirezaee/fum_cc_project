@@ -1,11 +1,9 @@
 from django.urls import include, path
-from documents.views import api_documents_view
 
 from main import error_handlers
 
 urlpatterns = [
-    path('docs/', api_documents_view),
-    path('users/', include('users.urls'))
+    path('users/', include('api.urls'))
 ]
 
 handler500 = error_handlers.server_error_handler

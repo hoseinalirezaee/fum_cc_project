@@ -3,7 +3,7 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from users import models
+from api import models
 
 
 class UserCreateSerializer(serializers.Serializer):

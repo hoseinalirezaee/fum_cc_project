@@ -14,14 +14,11 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'django.contrib.staticfiles',
-    'documents',
-    'users'
+    'api'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
 
@@ -52,8 +49,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR.parent / 'static_files'
+# STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR.parent / 'static_files'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
