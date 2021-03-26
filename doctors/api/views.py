@@ -42,5 +42,24 @@ class DoctorListView(ListAPIView):
         pass
 
 
+class AppointmentListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AppointmentTime
+        fields = ['id', 'date', 'time_from', 'time_to', 'count']
+
+
+class AppointmentsList(ListAPIView):
+
+    serializer_class = AppointmentListSerializer
+
+    def perform_authentication(self, request):
+        pass
+
+    def get_queryset(self):
+        doc_id = self.kwargs.get('doc_id')
+        return models.AppointmentTime.objects.filter(doctor_id=doc_id)
+
+
 create_comment_view = CommentView.as_view()
 list_doctors_views = DoctorListView.as_view()
+appointment_list_view = AppointmentsList.as_view()

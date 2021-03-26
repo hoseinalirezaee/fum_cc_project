@@ -5,8 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Doctor(models.Model):
-    id = models.CharField(_('User ID'), max_length=128, default='')
-    username = models.CharField(_('Username'), primary_key=True, max_length=128)
+    id = models.CharField(_('User ID'), max_length=128, primary_key=True)
+    username = models.CharField(_('Username'), max_length=128)
     first_name = models.CharField(_('First Name'), max_length=64)
     last_name = models.CharField(_('Last Name'), max_length=64)
     phone = models.CharField(_('Phone'), max_length=16, null=False, default='')
@@ -20,12 +20,15 @@ class Doctor(models.Model):
 
 
 class AppointmentTime(models.Model):
-    date = models.DateField()
-    time_from = models.TimeField()
-    time_to = models.TimeField()
-    count = models.PositiveSmallIntegerField()
+    date = models.DateField(default=timezone.now)
+    time_from = models.TimeField(default=timezone.now)
+    time_to = models.TimeField(default=timezone.now)
+    count = models.PositiveSmallIntegerField(default=1)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE,
                                related_name='appointment_times', related_query_name='appointment_times')
+
+    class Meta:
+        ordering = ('date', 'time_from', 'time_to')
 
 
 class Reservation(models.Model):

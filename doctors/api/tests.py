@@ -39,11 +39,23 @@ class TestComment(TestCase):
 
 class TestDoctorsList(TestCase):
     def test_doctor_list(self):
-        models.Doctor.objects.create(username='hosein', first_name='Hosein', last_name='Alirezaee')
-        models.Doctor.objects.create(username='ali', first_name='Ali', last_name='Ghasemi')
-        models.Doctor.objects.create(username='vahid', first_name='Vahid', last_name='Baghani')
-        models.Doctor.objects.create(username='pouria', first_name='Pouria', last_name='Ghadiri')
+        models.Doctor.objects.create(id=uuid1(), username='hosein', first_name='Hosein', last_name='Alirezaee')
+        models.Doctor.objects.create(id=uuid1(), username='ali', first_name='Ali', last_name='Ghasemi')
+        models.Doctor.objects.create(id=uuid1(), username='vahid', first_name='Vahid', last_name='Baghani')
+        models.Doctor.objects.create(id=uuid1(), username='pouria', first_name='Pouria', last_name='Ghadiri')
 
         response = self.client.get('/doctors/list/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 4)
+
+
+class TestAppoinmentList(TestCase):
+
+    def test_appoinment_list(self):
+        doc = models.Doctor.objects.create(id=uuid1(), username='hosein', first_name='Hosein', last_name='Alirezaee')
+        for _ in range(5):
+            models.AppointmentTime.objects.create(doctor=doc)
+
+        response = self.client.get('/doctors/%s/appointments/' % str(doc.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 5)
