@@ -19,7 +19,7 @@ class GetTokenView(APIView):
         pass
 
     def post(self, request):
-        serializer = GetTokenSerializer(data=request.data) 
+        serializer = GetTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data['username']
         try:
