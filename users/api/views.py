@@ -58,8 +58,11 @@ class UserViewSet(UpdateModelMixin, GenericViewSet):
             doc_id = request.data.get('doc_id')
             if not doc_id:
                 raise exceptions.ValidationError('doc_id is required.', 'required')
-            request.user.add_favorite_doctor(doc_id)
-        return Response({'message': 'Saved successfully.'})
+            if request.user.add_favorite_doctor(doc_id):
+                return Response({'message': 'Saved successfully.'})
+            else:
+                return Response({'message': 'No suck doctor.', 'success': False}, status=404)
+        return Response({'sucess': False, 'message': 'Unknown.'}, status=500)
 
 
 create_user_view = UserViewSet.as_view(actions={'post': 'create_user'})

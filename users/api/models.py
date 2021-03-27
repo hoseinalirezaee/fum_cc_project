@@ -19,6 +19,8 @@ class User(models.Model):
             if doc_id not in self.favorite_doctors:
                 self.favorite_doctors.append(doc_id)
                 self.save(update_fields=['favorite_doctors'])
+            return True
+        return False
 
     @staticmethod
     def create_user(username, first_name, last_name, password):
