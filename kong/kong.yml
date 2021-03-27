@@ -1,0 +1,28 @@
+_format_version: "2.1"
+
+_transform: true
+
+services:
+- name: authentication
+  url: http://authentication:8000
+  routes:
+  - name: authentication
+    paths:
+    - /a/
+    strip_path: true
+  
+- name: users
+  url: http://users:8000
+  routes:
+    - name: users
+      paths:
+        - /u/
+      strip_path: true
+
+- name: doctors
+  url: http://doctors:8000
+  routes:
+    - name: doctors
+      paths:
+        - /d/
+      strip_path: true

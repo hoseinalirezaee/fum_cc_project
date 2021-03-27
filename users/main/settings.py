@@ -6,8 +6,8 @@ from dj_database_url import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = environ.get('SECRET_KEY', 'DummySecretKey')
-JWT_ALGORITHM = 'HS256'
-JWT_SECRET = SECRET_KEY
+JWT_ALGORITHM = environ.get('JWT_ALGORITHM', 'HS256')
+JWT_SECRET = environ.get('JWT_SECRET', SECRET_KEY)
 
 DEBUG = True
 
@@ -49,8 +49,6 @@ USE_I18N = True
 
 USE_L10N = True
 
-# STATIC_URL = '/static/'
-# STATIC_ROOT = BASE_DIR.parent / 'static_files'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -64,11 +62,6 @@ REST_FRAMEWORK = {
 }
 
 
-AUTH_SERVICE_BASE_API_URL = 'http://example.com'
-AUTH_SERVICE_ACCESS_USERNAME = 'example'
-AUTH_SERVICE_ACCESS_PASSWORD = 'password'
-
-
-DOC_SERVICE_BASE_URL = 'http://doc.example.com'
-DOC_SERVICE_ACCESS_USERNAME = 'username'
-DOC_SERVICE_ACCESS_PASSWORD = 'password'
+AUTH_SERVICE_BASE_API_URL = environ.get('AUTH_SERVICE_BASE_API_URL', 'http://example.com')
+AUTH_SERVICE_ACCESS_USERNAME = environ.get('AUTH_SERVICE_ACCESS_USERNAME', 'username')
+AUTH_SERVICE_ACCESS_PASSWORD = environ.get('AUTH_SERVICE_ACCESS_PASSWORD', 'password')

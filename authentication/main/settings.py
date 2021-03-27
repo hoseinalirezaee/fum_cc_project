@@ -7,8 +7,8 @@ from dj_database_url import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = environ.get('SECRET_KEY', 'DummySecretKey')
-JWT_ALGORITHM = 'HS256'
-JWT_SECRET = SECRET_KEY
+JWT_ALGORITHM = environ.get('JWT_ALGORITHM', 'HS256')
+JWT_SECRET = environ.get('JWT_SECRET', SECRET_KEY)
 JWT_LIFETIME = timedelta(days=1)
 
 DEBUG = True
@@ -59,5 +59,5 @@ REST_FRAMEWORK = {
     'UNAUTHENTICATED_USER': 'common.authentication.UnAuthenticatedUser'
 }
 
-BASIC_AUTH_USERNAME = 'username'
-BASIC_AUTH_PASSWORD = 'password'
+BASIC_AUTH_USERNAME = environ.get('BASIC_AUTH_USERNAME', 'username')
+BASIC_AUTH_PASSWORD = environ.get('BASIC_AUTH_PASSWORD', 'passwrod')

@@ -1,0 +1,70 @@
+version: "3.8"
+
+services: 
+  users:
+    build: ./users
+    
+    environment:
+      AUTH_SERVICE_BASE_API_URL: 'http://authentication:8000'
+      AUTH_SERVICE_ACCESS_USERNAME: 'username'
+      AUTH_SERVICE_ACCESS_PASSWORD: 'password'
+      DATABASE_URL: 'postgres://root:1@postgres:5432/users'
+
+    depends_on: 
+      - postgres
+
+  authentication:
+    build: ./authentication
+    
+    environment:
+      BASIC_AUTH_USERNAME: 'username'
+      BASIC_AUTH_PASSWORD: 'password'
+      DATABASE_URL: 'postgres://root:1@postgres:5432/authentication'
+
+    depends_on: 
+      - postgres
+
+  doctors:
+    build: ./doctors
+    environment:
+      AUTH_SERVICE_BASE_API_URL: 'http://authentication:8000'
+      AUTH_SERVICE_ACCESS_USERNAME: 'username'
+      AUTH_SERVICE_ACCESS_PASSWORD: 'password'
+      DATABASE_URL: 'postgres://root:1@postgres:5432/doctors'
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13.2
+    volumes: 
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/:/docker-entrypoint-initdb.d
+    
+    environment: 
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1
+  
+  kong:
+    image: kong:2.3-ubuntu
+    environment:
+      KONG_DATABASE: 'off'
+      KONG_PROXY_ACCESS_LOG: '/dev/stdout'
+      KONG_ADMIN_ACCESS_LOG: '/dev/stdout'
+      KONG_PROXY_ERROR_LOG: '/dev/stderr'
+      KONG_ADMIN_ERROR_LOG: '/dev/stderr'
+      KONG_DECLARATIVE_CONFIG: /home/kong/config/kong.yml
+    volumes:
+      - source: ./kong
+        target: /home/kong/config/
+        type: bind
+    ports:
+      - 127.0.0.1:10000:8000
+
+    depends_on:
+      - authentication
+      - users
+      - doctors
+
+volumes: 
+  postgres_data: 
