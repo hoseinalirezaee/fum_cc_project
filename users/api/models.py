@@ -1,4 +1,4 @@
-from common.services import auth_services
+from common.services import auth_services, doc_services
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +21,16 @@ class User(models.Model):
                 self.save(update_fields=['favorite_doctors'])
             return True
         return False
+
+    def list_favorite_doctors(self):
+        docs_info = doc_services.get_docs_info(self.favorite_doctors)
+        return docs_info
+
+    def remove_favorite_doctor(self, doc_id):
+        if doc_id in self.favorite_doctors:
+            self.favorite_doctors.remove(doc_id)
+            self.save(update_fields=['favorite_doctors'])
+        return True
 
     @staticmethod
     def create_user(username, first_name, last_name, password):

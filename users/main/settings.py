@@ -54,6 +54,9 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer'
     ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser'
+    ],
     'EXCEPTION_HANDLER': 'main.error_handlers.api_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'common.authentication.CustomTokenAuthentication'
@@ -65,3 +68,8 @@ REST_FRAMEWORK = {
 AUTH_SERVICE_BASE_API_URL = environ.get('AUTH_SERVICE_BASE_API_URL', 'http://example.com')
 AUTH_SERVICE_ACCESS_USERNAME = environ.get('AUTH_SERVICE_ACCESS_USERNAME', 'username')
 AUTH_SERVICE_ACCESS_PASSWORD = environ.get('AUTH_SERVICE_ACCESS_PASSWORD', 'password')
+
+
+DOC_SERVICE_BASE_API_URL = environ.get('DOC_SERVICE_BASE_API_URL', 'http://example.com')
+DOC_SERVICE_ACCESS_USERNAME = environ.get('DOC_SERVICE_ACCESS_USERNAME', 'username')
+DOC_SERVICE_ACCESS_PASSWORD = environ.get('DOC_SERVICE_ACCESS_PASSWORD', 'password')

@@ -53,20 +53,37 @@ class UserViewSet(UpdateModelMixin, GenericViewSet):
         del serializer.validated_data['password']
         return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
-    def add_favorite_doctor(self, request, *args, **kwargs):
+    @staticmethod
+    def _favorite_doc_action(request, method_name):
         if request.user:
             doc_id = request.data.get('doc_id')
             if not doc_id:
                 raise exceptions.ValidationError('doc_id is required.', 'required')
-            if request.user.add_favorite_doctor(doc_id):
+            if getattr(request.user, method_name)(doc_id):
                 return Response({'message': 'Saved successfully.'})
             else:
                 return Response({'message': 'No suck doctor.', 'success': False}, status=404)
         return Response({'sucess': False, 'message': 'Unknown.'}, status=500)
 
+    def remove_favorite_doctor(self, request):
+        return self._favorite_doc_action(request, 'remove_favorite_doctor')
+
+    def add_favorite_doctor(self, request):
+        return self._favorite_doc_action(request, 'add_favorite_doctor')
+
+    def list_favorite_doctors(self, request):
+        if request.user:
+            return Response(request.user.list_favorite_doctors())
+
 
 create_user_view = UserViewSet.as_view(actions={'post': 'create_user'})
+
 add_favorite_doc = UserViewSet.as_view(actions={'post': 'add_favorite_doctor'})
+
+remove_favorite_doc = UserViewSet.as_view(actions={'delete': 'remove_favorite_doctor'})
+
+list_favorite_doc = UserViewSet.as_view(actions={'get': 'list_favorite_doctors'})
+
 update_user_view = UserViewSet.as_view(actions={'post': 'partial_update'})
 
-__all__ = ['create_user_view', 'add_favorite_doc', 'update_user_view']
+__all__ = ['create_user_view', 'add_favorite_doc', 'update_user_view', 'remove_favorite_doc']

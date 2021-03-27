@@ -37,21 +37,24 @@ class TestUserCreation(TestCase):
             'rule': 'PATIENT'
         }
 
-        response = self.client.post('/internal/users/create/', data=data, HTTP_AUTHORIZATION=get_basic_auth_header())
+        response = self.client.post('/internal/users/create/', data=data, HTTP_AUTHORIZATION=get_basic_auth_header(),
+                                    content_type='application/json')
         self.assertEqual(response.status_code, 201)
         user = models.User.objects.get(id=response.json()['user_id'])
         self.assertEqual(user.username, 'hosein')
         self.assertTrue(user.check_password('1'))
         self.assertEqual(user.rule, models.User.Rules.PATIENT)
 
-        response = self.client.post('/internal/users/create/', data=data, HTTP_AUTHORIZATION=get_basic_auth_header())
+        response = self.client.post('/internal/users/create/', json=data, HTTP_AUTHORIZATION=get_basic_auth_header(),
+                                    content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
 
 class TestGetToken(TestCase):
     def test_get_token(self):
         user = models.User.objects.create_patient(username='hosein', password='1')
-        response = self.client.post('/authentication/get_token/', data={'username': 'hosein', 'password': 1})
+        response = self.client.post('/authentication/get_token/', data={'username': 'hosein', 'password': 1},
+                                    content_type='application/json')
         data = jwt.decode(response.json()['token'], algorithms=settings.JWT_ALGORITHM, key=settings.JWT_SECRET)
         self.assertEqual(data['user_id'], str(user.id))
 

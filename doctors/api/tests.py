@@ -31,22 +31,35 @@ class TestComment(TestCase):
             'text': 'Test text.'
         }
         mocked_get_rule.return_value = auth_services.UserRule.PATIENT
-        response = self.client.post('/doctors/%s/comments/' % doc.id, data=data, HTTP_AUTHORIZATION=auth_header)
+        response = self.client.post('/doctors/%s/comments/' % doc.id, data=data, HTTP_AUTHORIZATION=auth_header,
+                                    content_type='application/json')
         self.assertEqual(response.status_code, 201)
         comment = models.Comment.objects.get(doctor=doc)
         self.assertEqual(comment.text, 'Test text.')
 
 
 class TestDoctorsList(TestCase):
-    def test_doctor_list(self):
-        models.Doctor.objects.create(id=uuid1(), username='hosein', first_name='Hosein', last_name='Alirezaee')
-        models.Doctor.objects.create(id=uuid1(), username='ali', first_name='Ali', last_name='Ghasemi')
-        models.Doctor.objects.create(id=uuid1(), username='vahid', first_name='Vahid', last_name='Baghani')
-        models.Doctor.objects.create(id=uuid1(), username='pouria', first_name='Pouria', last_name='Ghadiri')
+    def setUp(self) -> None:
+        ids = [str(uuid1()) for _ in range(4)]
+        models.Doctor.objects.create(id=ids[0], username='hosein', first_name='Hosein', last_name='Alirezaee')
+        models.Doctor.objects.create(id=ids[1], username='ali', first_name='Ali', last_name='Ghasemi')
+        models.Doctor.objects.create(id=ids[2], username='vahid', first_name='Vahid', last_name='Baghani')
+        models.Doctor.objects.create(id=ids[3], username='pouria', first_name='Pouria', last_name='Ghadiri')
 
+        self.ids = ids
+
+    def test_doctor_list(self):
         response = self.client.get('/doctors/list/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 4)
+
+    def test_internal_doctor_list(self):
+        ids = self.ids[:2]
+        response = self.client.post('/internal/doctors/list/', data={'doc_ids': ids}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 2)
+        for doc in response.json()['results']:
+            self.assertIn(doc['id'], ids)
 
 
 class TestAppoinmentList(TestCase):
@@ -69,7 +82,7 @@ class TestReservetion(TestCase):
 
         mocked_get_rule.return_value = auth_services.UserRule.PATIENT
         response = self.client.post('/doctors/appointments/%s/reserve/' % appointment.id,
-                                    HTTP_AUTHORIZATION=get_auth_header('100'))
+                                    HTTP_AUTHORIZATION=get_auth_header('100'), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(models.Reservation.objects.filter(id=response.json()['reservation_id']).exists())

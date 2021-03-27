@@ -1,5 +1,5 @@
 from common.authentication import CustomTokenAuthentication
-from rest_framework import permissions, serializers, status
+from rest_framework import permissions, serializers, status, exceptions, generics, mixins
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -43,6 +43,23 @@ class DoctorListView(ListAPIView):
         pass
 
 
+class DoctorListInternal(mixins.ListModelMixin, generics.GenericAPIView):
+    queryset = models.Doctor.objects.all()
+    serializer_class = DoctorListSerializer
+
+    def perform_authentication(self, request):
+        pass
+
+    def filter_queryset(self, queryset):
+        doc_ids = self.request.data.get('doc_ids')
+        if doc_ids is None or not isinstance(doc_ids, list):
+            raise exceptions.ValidationError('doc_ids must be provided and be an instance of list.', 'validation_error')
+        return queryset.filter(id__in=doc_ids)
+
+    def post(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
 class AppointmentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AppointmentTime
@@ -75,3 +92,4 @@ create_comment_view = CommentView.as_view()
 list_doctors_views = DoctorListView.as_view()
 appointment_list_view = AppointmentsList.as_view()
 reserve_doctor = ReserveDoctorView.as_view()
+internal_list_doctors = DoctorListInternal.as_view()

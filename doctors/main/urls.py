@@ -3,7 +3,8 @@ from django.urls import include, path
 from main import error_handlers
 
 urlpatterns = [
-    path('doctors/', include('api.urls'))
+    path('doctors/', include('api.urls')),
+    path('internal/', include('api.urls_internal'))
 ]
 
 handler500 = error_handlers.server_error_handler

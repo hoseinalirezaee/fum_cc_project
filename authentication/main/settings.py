@@ -55,6 +55,9 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer'
     ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser'
+    ],
     'EXCEPTION_HANDLER': 'main.error_handlers.api_exception_handler',
     'UNAUTHENTICATED_USER': 'common.authentication.UnAuthenticatedUser'
 }
