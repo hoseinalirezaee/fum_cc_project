@@ -27,4 +27,5 @@ class CustomTokenAuthentication(TokenAuthentication):
         except User.DoesNotExist:
             raise AuthenticationFailed('No such user.', 'user_not_found')
         else:
+            user.is_authenticated = True
             return user, token
