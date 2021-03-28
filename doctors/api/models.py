@@ -1,4 +1,3 @@
-from common.services import auth_services
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -17,6 +16,9 @@ class Doctor(models.Model):
 
     class Meta:
         ordering = ('last_name', 'first_name')
+
+    def __str__(self) -> str:
+        return '%s %s' % (self.first_name, self.last_name)
 
 
 class AppointmentTime(models.Model):
@@ -42,6 +44,9 @@ class Reservation(models.Model):
     appointment = models.ForeignKey(AppointmentTime, on_delete=models.PROTECT,
                                     related_name='reservations', related_query_name='reservations')
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Comment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE,
@@ -50,8 +55,11 @@ class Comment(models.Model):
     date_added = models.DateTimeField(default=timezone.now)
     text = models.TextField(max_length=4096)
 
+    class Meta:
+        ordering = ['-date_added']
+
     @staticmethod
     def create_comment(doc, patient_id, text):
-        if auth_services.get_rule(patient_id) == auth_services.UserRule.PATIENT and text:
+        if text:
             comment = Comment.objects.create(doctor=doc, patient_id=patient_id, text=text)
             return comment

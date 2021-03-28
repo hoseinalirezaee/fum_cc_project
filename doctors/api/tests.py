@@ -86,3 +86,43 @@ class TestReservetion(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(models.Reservation.objects.filter(id=response.json()['reservation_id']).exists())
+
+
+class TestUserViews(TestCase):
+    def setUp(self) -> None:
+        self.doc = models.Doctor.objects.create(id=uuid1(), username='hosein', first_name='Hosein', last_name='Alirezaee')
+        appointments = [models.AppointmentTime.objects.create(doctor=self.doc) for _ in range(3)]
+        self.appointments = appointments
+
+        self.user_id_1 = str(uuid1())
+        self.user_id_2 = str(uuid1())
+
+        appointments[0].reserve(self.user_id_1)
+        appointments[2].reserve(self.user_id_1)
+        appointments[1].reserve(self.user_id_2)
+        appointments[0].reserve(self.user_id_2)
+
+        self.comment_1 = models.Comment.create_comment(self.doc, self.user_id_1, 'User 1')
+        self.comment_2 = models.Comment.create_comment(self.doc, self.user_id_2, 'User 2')
+
+    @mock.patch('common.services.auth_services.get_rule')
+    def test_comments_list(self, mocked_get_rule):
+        token = get_auth_header(self.user_id_1)
+
+        mocked_get_rule.return_value = auth_services.UserRule.PATIENT
+        response = self.client.get('/doctors/users/comments/list/', HTTP_AUTHORIZATION=token)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 1)
+        self.assertEqual(response.json()['results'][0]['text'], 'User 1')
+
+    @mock.patch('common.services.auth_services.get_rule')
+    def test_appointments_list(self, mocked_get_rule):
+        token = get_auth_header(self.user_id_2)
+
+        mocked_get_rule.return_value = auth_services.UserRule.PATIENT
+        response = self.client.get('/doctors/users/appointments/list/', HTTP_AUTHORIZATION=token)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results']), 2)
+        appointments = response.json()['results']
+        for a in appointments:
+            self.assertEqual(a['patient_id'], self.user_id_2)
