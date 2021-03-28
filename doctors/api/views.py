@@ -1,4 +1,6 @@
 from common.authentication import CustomTokenAuthentication
+from django_filters.filterset import FilterSet
+from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework import (exceptions, generics, mixins, permissions,
                             serializers, status, viewsets)
 from rest_framework.generics import ListAPIView, get_object_or_404
@@ -36,9 +38,17 @@ class DoctorListSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'phone', 'address', 'men', 'expertise', 'city']
 
 
+class DoctorFilteset(FilterSet):
+    class Meta:
+        model = models.Doctor
+        fields = ['men', 'city', 'expertise']
+
+
 class DoctorListView(ListAPIView):
     queryset = models.Doctor.objects.all()
     serializer_class = DoctorListSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DoctorFilteset
 
     def perform_authentication(self, request):
         pass

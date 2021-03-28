@@ -41,17 +41,35 @@ class TestComment(TestCase):
 class TestDoctorsList(TestCase):
     def setUp(self) -> None:
         ids = [str(uuid1()) for _ in range(4)]
-        models.Doctor.objects.create(id=ids[0], username='hosein', first_name='Hosein', last_name='Alirezaee')
-        models.Doctor.objects.create(id=ids[1], username='ali', first_name='Ali', last_name='Ghasemi')
-        models.Doctor.objects.create(id=ids[2], username='vahid', first_name='Vahid', last_name='Baghani')
-        models.Doctor.objects.create(id=ids[3], username='pouria', first_name='Pouria', last_name='Ghadiri')
-
+        docs = [
+            models.Doctor.objects.create(id=ids[0], username='hosein', first_name='Hosein',
+                                         last_name='Alirezaee', men='men1', city='mashhad', expertise='e1'),
+            models.Doctor.objects.create(id=ids[1], username='ali', first_name='Ali', last_name='Ghasemi', 
+                                         men='men2', city='qom', expertise='e2'),
+            models.Doctor.objects.create(id=ids[2], username='vahid', first_name='Vahid',
+                                         last_name='Baghani', men='men3', city='sabzevar', expertise='e3'),
+            models.Doctor.objects.create(id=ids[3], username='pouria', first_name='Pouria',
+                                         last_name='Ghadiri', men='men4', city='gorgan', expertise='e4')
+        ]
+        self.docs = docs
         self.ids = ids
 
     def test_doctor_list(self):
         response = self.client.get('/doctors/list/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 4)
+
+        response = self.client.get('/doctors/list/', data={'men': 'men1'})
+        self.assertEqual(len(response.json()['results']), 1)
+        self.assertEqual(response.json()['results'][0]['id'], self.docs[0].id)
+
+        response = self.client.get('/doctors/list/', data={'city': 'gorgan'})
+        self.assertEqual(len(response.json()['results']), 1)
+        self.assertEqual(response.json()['results'][0]['first_name'], self.docs[3].first_name)
+
+        response = self.client.get('/doctors/list/', data={'expertise': 'e3'})
+        self.assertEqual(len(response.json()['results']), 1)
+        self.assertEqual(response.json()['results'][0]['last_name'], self.docs[2].last_name)
 
     def test_internal_doctor_list(self):
         ids = self.ids[:2]
