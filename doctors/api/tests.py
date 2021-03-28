@@ -44,7 +44,7 @@ class TestDoctorsList(TestCase):
         docs = [
             models.Doctor.objects.create(id=ids[0], username='hosein', first_name='Hosein',
                                          last_name='Alirezaee', men='men1', city='mashhad', expertise='e1'),
-            models.Doctor.objects.create(id=ids[1], username='ali', first_name='Ali', last_name='Ghasemi', 
+            models.Doctor.objects.create(id=ids[1], username='ali', first_name='Ali', last_name='Ghasemi',
                                          men='men2', city='qom', expertise='e2'),
             models.Doctor.objects.create(id=ids[2], username='vahid', first_name='Vahid',
                                          last_name='Baghani', men='men3', city='sabzevar', expertise='e3'),
