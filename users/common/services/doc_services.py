@@ -44,5 +44,5 @@ def get_docs_info(doc_ids):
         return []
 
     url = get_url('get_docs_info')
-    response = session.post(url, data={'doc_ids': doc_ids})
+    response = session.post(url, json={'doc_ids': doc_ids})
     return response.json()['results']
