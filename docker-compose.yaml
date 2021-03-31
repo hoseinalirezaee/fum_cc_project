@@ -8,6 +8,11 @@ services:
       AUTH_SERVICE_BASE_API_URL: 'http://authentication:8000'
       AUTH_SERVICE_ACCESS_USERNAME: 'username'
       AUTH_SERVICE_ACCESS_PASSWORD: 'password'
+
+      DOC_SERVICE_BASE_API_URL: 'http://doctors:8000'
+      DOC_SERVICE_ACCESS_USERNAME: 'username'
+      DOC_SERVICE_ACCESS_PASSWORD: 'password'
+
       DATABASE_URL: 'postgres://root:1@postgres:5432/users'
 
     depends_on: 
