@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  doctors:
+    image: sajadkh/doctor_system_doctor_panel
+    ports:
+      - 8001:8001
+    deploy:
+      replicas: 1
+
+  auth:
+    image: sajadkh/doctor_system_authentication
+    ports:
+      - 8000:8000
+    deploy:
+      replicas: 2
+
+  patients:
+    image: sajadkh/doctor_system_patient_panel
+    ports:
+      - 8002:8002
+    deploy:
+      replicas: 1
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - 9000:8080
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    deploy:
+      replicas: 1
