@@ -1,21 +1,21 @@
 version: "3.7"
 
 services:
-  doctors:
+  doctor:
     image: sajadkh/doctor_system_doctor_panel
     ports:
       - 8001:8001
     deploy:
       replicas: 1
 
-  auth:
+  authentication:
     image: sajadkh/doctor_system_authentication
     ports:
       - 8000:8000
     deploy:
       replicas: 2
 
-  patients:
+  patient:
     image: sajadkh/doctor_system_patient_panel
     ports:
       - 8002:8002
