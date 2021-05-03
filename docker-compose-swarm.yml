@@ -32,3 +32,6 @@ services:
         target: /var/run/docker.sock
     deploy:
       replicas: 1
+      placement:
+        constraints:
+          - "node.role==manager"
